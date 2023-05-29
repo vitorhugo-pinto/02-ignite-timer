@@ -5,6 +5,8 @@ import {
   CountdownContainer,
   ColonContainer,
   StartCountdownButton,
+  ProjectNameInput,
+  ProjectTimeInput,
 } from './styles'
 
 export function Home() {
@@ -13,10 +15,27 @@ export function Home() {
       <form action="">
         <FormContainer>
           <label htmlFor="project-name">Gonna work on</label>
-          <input id="project-name" />
+          <ProjectNameInput
+            id="project-name"
+            list="naming-projects-suggestions"
+            placeholder="Give your project a name"
+          />
+
+          <datalist id="naming-projects-suggestions">
+            <option value="Name 1" />
+            <option value="Name 2" />
+            <option value="Name 3" />
+          </datalist>
 
           <label htmlFor="project-time-minutes">for</label>
-          <input id="project-time-minutes" type="number" />
+          <ProjectTimeInput
+            id="project-time-minutes"
+            type="number"
+            placeholder="00"
+            step={5}
+            min={5}
+            max={60}
+          />
           <span>minutes</span>
         </FormContainer>
         <CountdownContainer>
