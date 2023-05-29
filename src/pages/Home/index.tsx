@@ -4,6 +4,7 @@ import {
   FormContainer,
   CountdownContainer,
   ColonContainer,
+  StartCountdownButton,
 } from './styles'
 
 export function Home() {
@@ -15,7 +16,7 @@ export function Home() {
           <input id="project-name" />
 
           <label htmlFor="project-time-minutes">for</label>
-          <input id="project-time-minutes" />
+          <input id="project-time-minutes" type="number" />
           <span>minutes</span>
         </FormContainer>
         <CountdownContainer>
@@ -25,10 +26,10 @@ export function Home() {
           <span>0</span>
           <span>0</span>
         </CountdownContainer>
-        <button type="submit">
+        <StartCountdownButton type="submit">
           <Play size={24} />
           Start
-        </button>
+        </StartCountdownButton>
       </form>
     </HomeContainer>
   )

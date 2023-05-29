@@ -5,6 +5,7 @@ export const HomeContainer = styled.main`
 
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
 
   form {
@@ -48,4 +49,28 @@ export const ColonContainer = styled.div`
   color: ${(props) => props.theme['green-500']};
   width: 4rem;
   overflow: hidden;
+`
+export const StartCountdownButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 0;
+  padding: 1rem;
+  gap: 0.5rem;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  background-color: ${(props) => props.theme['green-500']};
+  color: ${(props) => props.theme['gray-100']};
+
+  &:not(:disabled):hover {
+    background-color: ${(props) => props.theme['green-700']};
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `
