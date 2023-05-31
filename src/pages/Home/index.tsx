@@ -1,5 +1,7 @@
 import { Play } from '@phosphor-icons/react'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
 
 import {
   HomeContainer,
@@ -11,18 +13,25 @@ import {
   ProjectTimeInput,
 } from './styles'
 
-interface IProjectInputs {
-  projectName: string
-  projectTimerInMinutes: number
-}
+const projectFormValidationSchema = zod.object({
+  projectName: zod.string().min(1, 'Enter project name'),
+  projectTimerInMinutes: zod.number().min(5).max(60),
+})
+
+type ProjectFormData = zod.infer<typeof projectFormValidationSchema>
 
 export function Home() {
-  const { register, handleSubmit, watch } = useForm<IProjectInputs>()
+  const { register, handleSubmit, watch, reset } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectFormValidationSchema),
+    defaultValues: {
+      projectName: '',
+      projectTimerInMinutes: 0,
+    },
+  })
 
-  function handleCreateNewProjectTimer(data: IProjectInputs) {
+  function handleCreateNewProjectTimer(data: ProjectFormData) {
     console.log(data)
-    console.log(data.projectName)
-    console.log(data.projectTimerInMinutes)
+    reset()
   }
 
   const projectName = watch('projectName')
@@ -40,11 +49,7 @@ export function Home() {
             {...register('projectName')}
           />
 
-          <datalist id="namingProjectsSuggestions">
-            <option value="Name 1" />
-            <option value="Name 2" />
-            <option value="Name 3" />
-          </datalist>
+          <datalist id="namingProjectsSuggestions"></datalist>
 
           <label htmlFor="projectTimerInMinutes">for</label>
           <ProjectTimeInput
