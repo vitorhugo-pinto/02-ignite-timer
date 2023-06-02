@@ -45,6 +45,10 @@ const BaseInput = styled.input`
   &::placeholder {
     color: ${(props) => props.theme['gray-500']};
   }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 `
 
 export const ProjectNameInput = styled(BaseInput)`
@@ -81,7 +85,8 @@ export const ColonContainer = styled.div`
   width: 4rem;
   overflow: hidden;
 `
-export const StartCountdownButton = styled.button`
+
+const BaseCountdownButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,8 +98,11 @@ export const StartCountdownButton = styled.button`
 
   cursor: pointer;
 
-  background-color: ${(props) => props.theme['green-500']};
   color: ${(props) => props.theme['gray-100']};
+`
+
+export const StartCountdownButton = styled(BaseCountdownButton)`
+  background-color: ${(props) => props.theme['green-500']};
 
   &:not(:disabled):hover {
     background-color: ${(props) => props.theme['green-700']};
@@ -103,5 +111,12 @@ export const StartCountdownButton = styled.button`
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+  }
+`
+export const StopCountdownButton = styled(BaseCountdownButton)`
+  background-color: ${(props) => props.theme['red-500']};
+
+  &:hover {
+    background-color: ${(props) => props.theme['red-700']};
   }
 `
