@@ -1,8 +1,3 @@
-import { Play } from '@phosphor-icons/react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as zod from 'zod'
-
 import {
   HomeContainer,
   FormContainer,
@@ -13,15 +8,31 @@ import {
   ProjectTimeInput,
 } from './styles'
 
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Play } from '@phosphor-icons/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
+
 const projectFormValidationSchema = zod.object({
   projectName: zod.string().min(1, 'Enter project name'),
   projectTimerInMinutes: zod.number().min(5).max(60),
 })
 
-type ProjectFormData = zod.infer<typeof projectFormValidationSchema>
+type ProjectFormType = zod.infer<typeof projectFormValidationSchema>
+
+interface ProjectModel {
+  id: string
+  projectName: string
+  projectTimerInMinutes: number
+}
 
 export function Home() {
-  const { register, handleSubmit, watch, reset } = useForm<ProjectFormData>({
+  const [projects, setProjects] = useState<ProjectModel[]>([])
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
+  const [timePassedInSeconds, setTimePassedInSeconds] = useState(0)
+
+  const { register, handleSubmit, watch, reset } = useForm<ProjectFormType>({
     resolver: zodResolver(projectFormValidationSchema),
     defaultValues: {
       projectName: '',
@@ -29,10 +40,56 @@ export function Home() {
     },
   })
 
-  function handleCreateNewProjectTimer(data: ProjectFormData) {
-    console.log(data)
+  function handleCreateNewProjectTimer(data: ProjectFormType) {
+    const id = String(new Date().getTime())
+
+    const newProject: ProjectModel = {
+      id,
+      projectName: data.projectName,
+      projectTimerInMinutes: data.projectTimerInMinutes,
+    }
+    setProjects((state) => [...state, newProject])
+    setActiveProjectId(id)
+    setTimePassedInSeconds(0)
+
     reset()
   }
+
+  const activeProject = projects.find(
+    (project) => project.id === activeProjectId,
+  )
+
+  const totalTimeInSeconds = activeProject
+    ? 60 * activeProject.projectTimerInMinutes
+    : 0
+
+  const remainderTimeInSeconds = activeProject
+    ? totalTimeInSeconds - timePassedInSeconds
+    : 0
+
+  useEffect(() => {
+    let interval: number
+    if (activeProject) {
+      interval = setInterval(() => {
+        setTimePassedInSeconds((state) => state + 1)
+      }, 1000)
+    }
+    return () => {
+      clearInterval(interval)
+    }
+  }, [activeProject])
+
+  const timeInMinutes = Math.floor(remainderTimeInSeconds / 60)
+  const timeInSeconds = remainderTimeInSeconds % 60
+
+  const timeInMinutesToDisplay = String(timeInMinutes).padStart(2, '0')
+  const timeInSecondsToDisplay = String(timeInSeconds).padStart(2, '0')
+
+  useEffect(() => {
+    if (activeProject) {
+      document.title = `${timeInMinutesToDisplay}:${timeInSecondsToDisplay}`
+    }
+  }, [activeProject, timeInMinutesToDisplay, timeInSecondsToDisplay])
 
   const projectName = watch('projectName')
   const isSubmitDisabled = !projectName
@@ -64,11 +121,11 @@ export function Home() {
           <span>minutes</span>
         </FormContainer>
         <CountdownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{timeInMinutesToDisplay[0]}</span>
+          <span>{timeInMinutesToDisplay[1]}</span>
           <ColonContainer>:</ColonContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{timeInSecondsToDisplay[0]}</span>
+          <span>{timeInSecondsToDisplay[1]}</span>
         </CountdownContainer>
         <StartCountdownButton disabled={isSubmitDisabled} type="submit">
           <Play size={24} />
