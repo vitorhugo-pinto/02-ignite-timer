@@ -26,7 +26,9 @@ interface ProjectModel {
   id: string
   projectName: string
   projectTimerInMinutes: number
+  startedAt: Date
   abortedDate?: Date
+  finishedDate?: Date
 }
 
 export function Home() {
@@ -49,6 +51,7 @@ export function Home() {
       id,
       projectName: data.projectName,
       projectTimerInMinutes: data.projectTimerInMinutes,
+      startedAt: new Date(),
     }
     setProjects((state) => [...state, newProject])
     setActiveProjectId(id)
@@ -58,8 +61,8 @@ export function Home() {
   }
 
   function handleStopCountdown() {
-    setProjects(
-      projects.map((project) => {
+    setProjects((state) =>
+      state.map((project) => {
         if (project.id === activeProjectId) {
           return { ...project, abortedDate: new Date() }
         } else {
@@ -94,6 +97,21 @@ export function Home() {
     }
   }, [activeProject])
 
+  useEffect(() => {
+    if (timePassedInSeconds >= totalTimeInSeconds) {
+      setProjects((state) =>
+        state.map((project) => {
+          if (project.id === activeProjectId) {
+            return { ...project, finishedDate: new Date() }
+          } else {
+            return project
+          }
+        }),
+      )
+      setActiveProjectId(null)
+    }
+  }, [timePassedInSeconds, totalTimeInSeconds, activeProjectId])
+
   const timeInMinutes = Math.floor(remainderTimeInSeconds / 60)
   const timeInSeconds = remainderTimeInSeconds % 60
 
@@ -108,6 +126,8 @@ export function Home() {
 
   const projectName = watch('projectName')
   const isSubmitDisabled = !projectName
+
+  console.log(projects)
 
   return (
     <HomeContainer>
