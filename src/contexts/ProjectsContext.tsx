@@ -2,25 +2,23 @@ import {
   createContext,
   Dispatch,
   SetStateAction,
-  useState,
   ReactNode,
+  useReducer,
+  useState,
 } from 'react'
+import { IProjectModel, projectsReducer } from '../reducers/projects/reducer'
+import {
+  abortCurrentProjectAction,
+  createNewProjectAction,
+  setCurrentProjectAsFinishedAction,
+} from '../reducers/projects/actions'
 
 interface IProjectForm {
   projectName: string
   projectTimerInMinutes: number
 }
 
-interface IProjectModel {
-  id: string
-  projectName: string
-  projectTimerInMinutes: number
-  startedAt: Date
-  abortedDate?: Date
-  finishedDate?: Date
-}
-
-interface ProjectsContextProps {
+interface IProjectsContextProps {
   projects: IProjectModel[]
   activeProject: IProjectModel | undefined
   activeProjectId: string | null
@@ -31,34 +29,29 @@ interface ProjectsContextProps {
   abortCurrentProject: () => void
 }
 
-export const ProjectsContext = createContext({} as ProjectsContextProps)
+export const ProjectsContext = createContext({} as IProjectsContextProps)
 
-interface ProjectsContextProviderProps {
+interface IProjectsContextProviderProps {
   children: ReactNode
 }
 
 export function ProjectsContextProvider({
   children,
-}: ProjectsContextProviderProps) {
-  const [projects, setProjects] = useState<IProjectModel[]>([])
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
+}: IProjectsContextProviderProps) {
+  const [projectsSate, dispatch] = useReducer(projectsReducer, {
+    projects: [],
+    activeProjectId: null,
+  })
   const [timePassedInSeconds, setTimePassedInSeconds] = useState(0)
+
+  const { projects, activeProjectId } = projectsSate
 
   const activeProject = projects.find(
     (project) => project.id === activeProjectId,
   )
 
   function setCurrentProjectAsFinished() {
-    setProjects((state) =>
-      state.map((project) => {
-        if (project.id === activeProjectId) {
-          return { ...project, finishedDate: new Date() }
-        } else {
-          return project
-        }
-      }),
-    )
-    setActiveProjectId(null)
+    dispatch(setCurrentProjectAsFinishedAction())
   }
 
   function createNewProject(data: IProjectForm) {
@@ -70,22 +63,12 @@ export function ProjectsContextProvider({
       projectTimerInMinutes: data.projectTimerInMinutes,
       startedAt: new Date(),
     }
-    setProjects((state) => [...state, newProject])
-    setActiveProjectId(id)
+    dispatch(createNewProjectAction(newProject))
     setTimePassedInSeconds(0)
   }
 
   function abortCurrentProject() {
-    setProjects((state) =>
-      state.map((project) => {
-        if (project.id === activeProjectId) {
-          return { ...project, abortedDate: new Date() }
-        } else {
-          return project
-        }
-      }),
-    )
-    setActiveProjectId(null)
+    dispatch(abortCurrentProjectAction())
   }
 
   return (
