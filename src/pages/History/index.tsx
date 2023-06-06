@@ -26,7 +26,7 @@ export function History() {
                   <td>{project.projectName}</td>
                   <td>{project.projectTimerInMinutes} minutes</td>
                   <td>
-                    {formatDistanceToNow(project.startedAt, {
+                    {formatDistanceToNow(new Date(project.startedAt), {
                       addSuffix: true,
                     })}
                   </td>
