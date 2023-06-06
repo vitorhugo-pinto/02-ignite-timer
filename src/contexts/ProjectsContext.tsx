@@ -5,6 +5,7 @@ import {
   ReactNode,
   useReducer,
   useState,
+  useEffect,
 } from 'react'
 import { IProjectModel, projectsReducer } from '../reducers/projects/reducer'
 import {
@@ -38,11 +39,28 @@ interface IProjectsContextProviderProps {
 export function ProjectsContextProvider({
   children,
 }: IProjectsContextProviderProps) {
-  const [projectsSate, dispatch] = useReducer(projectsReducer, {
-    projects: [],
-    activeProjectId: null,
-  })
+  const [projectsSate, dispatch] = useReducer(
+    projectsReducer,
+    {
+      projects: [],
+      activeProjectId: null,
+    },
+    (initialState) => {
+      const storedStateJSON = localStorage.getItem('@ignite-timer:cycles-state')
+      if (storedStateJSON) {
+        return JSON.parse(storedStateJSON)
+      }
+
+      return initialState
+    },
+  )
   const [timePassedInSeconds, setTimePassedInSeconds] = useState(0)
+
+  useEffect(() => {
+    const stateJSON = JSON.stringify(projectsSate)
+
+    localStorage.setItem('@ignite-timer:cycles-state', stateJSON)
+  }, [projectsSate])
 
   const { projects, activeProjectId } = projectsSate
 
