@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import { HistoryContainer, HistoryList, Status } from './styles'
 import { ProjectsContext } from '../../contexts/ProjectsContext'
 
@@ -24,7 +25,11 @@ export function History() {
                 <tr key={project.id}>
                   <td>{project.projectName}</td>
                   <td>{project.projectTimerInMinutes} minutes</td>
-                  <td>{project.startedAt.toISOString()}</td>
+                  <td>
+                    {formatDistanceToNow(project.startedAt, {
+                      addSuffix: true,
+                    })}
+                  </td>
                   <td>
                     {project.finishedDate && (
                       <Status status="done">Done</Status>
