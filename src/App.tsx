@@ -4,12 +4,15 @@ import { defaultTheme } from './styles/themes/default'
 
 import { BrowserRouter } from 'react-router-dom'
 import { Router } from './Router'
+import { ProjectsContextProvider } from './contexts/ProjectsContext'
 
 export function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <BrowserRouter>
-        <Router />
+        <ProjectsContextProvider>
+          <Router />
+        </ProjectsContextProvider>
       </BrowserRouter>
       <GlobalStyle />
     </ThemeProvider>
