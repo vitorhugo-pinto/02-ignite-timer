@@ -1,6 +1,9 @@
+import { useContext } from 'react'
 import { HistoryContainer, HistoryList, Status } from './styles'
+import { ProjectsContext } from '../../contexts/ProjectsContext'
 
 export function History() {
+  const { projects } = useContext(ProjectsContext)
   return (
     <HistoryContainer>
       <h1>History</h1>
@@ -16,46 +19,26 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Fixing technical debts</td>
-              <td>25 minutes</td>
-              <td>About two moths ago</td>
-              <td>
-                <Status status="done">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Fixing technical debts</td>
-              <td>25 minutes</td>
-              <td>About two moths ago</td>
-              <td>
-                <Status status="done">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Fixing technical debts</td>
-              <td>25 minutes</td>
-              <td>About two moths ago</td>
-              <td>
-                <Status status="done">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Fixing technical debts</td>
-              <td>25 minutes</td>
-              <td>About two moths ago</td>
-              <td>
-                <Status status="onGoing">On going</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Fixing technical debts</td>
-              <td>25 minutes</td>
-              <td>About two moths ago</td>
-              <td>
-                <Status status="aborted">Done</Status>
-              </td>
-            </tr>
+            {projects.map((project) => {
+              return (
+                <tr key={project.id}>
+                  <td>{project.projectName}</td>
+                  <td>{project.projectTimerInMinutes} minutes</td>
+                  <td>{project.startedAt.toISOString()}</td>
+                  <td>
+                    {project.finishedDate && (
+                      <Status status="done">Done</Status>
+                    )}
+                    {project.abortedDate && (
+                      <Status status="aborted">Aborted</Status>
+                    )}
+                    {!project.finishedDate && !project.abortedDate && (
+                      <Status status="onGoing">On going</Status>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </HistoryList>
